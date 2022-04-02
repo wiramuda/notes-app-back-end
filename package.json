@@ -1,6 +1,7 @@
 {
   "name": "notes-app-back-end",
   "version": "1.0.0",
+<<<<<<< HEAD
   "description": "basic proyek for back end ",
   "main": "index.js",
   "scripts": {
@@ -12,12 +13,39 @@
   "license": "ISC",
   "devDependencies": {
     "eslint": "^7.25.0",
+=======
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start-prod": "NODE_ENV=production node ./src/server.js",
+    "start-dev": "nodemon ./src/server.js",
+    "lint": "eslint ./src",
+    "migrate": "node-pg-migrate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^7.21.0",
+>>>>>>> cdce824 (initial commit)
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
     "nodemon": "^2.0.7"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@hapi/hapi": "^20.1.2",
     "nanoid": "^3.1.22"
+=======
+    "@hapi/hapi": "^20.1.0",
+    "@hapi/jwt": "^2.0.1",
+    "amqplib": "^0.8.0",
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "joi": "^17.4.0",
+    "nanoid": "^3.1.20",
+    "node-pg-migrate": "^5.9.0",
+    "pg": "^8.6.0"
+>>>>>>> cdce824 (initial commit)
   }
 }

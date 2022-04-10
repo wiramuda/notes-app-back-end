@@ -36,13 +36,12 @@ const upload = require('./src/api/upload');
 const UploadService = require('./src/services/Storage/StorageService');
 const UploadValidator = require('./src/validator/Upload');
 
-
 const init = async () => {
   const collaborationService = new CollaborationService();
   const notesService = new NoteService(collaborationService);
   const userService = new UserService();
   const authService = new AuthService();
-  const uploadService = new UploadService(path.resolve(__dirname,'api/uploads/file/images'));
+  const uploadService = new UploadService(path.resolve(__dirname, 'api/uploads/file/images'));
   const server = Hapi.server({
     port: process.env.PORT,
     host: process.env.HOST,
@@ -59,7 +58,7 @@ const init = async () => {
     },
     {
       plugin: Inert,
-    }
+    },
   ]);
   server.auth.strategy('notesapp_jwt', 'jwt', {
     keys: process.env.ACCESS_TOKEN_KEY,
@@ -69,14 +68,12 @@ const init = async () => {
       sub: false,
       maxAgeSec: process.env.ACCESS_TOKEN_AGE,
     },
-    validate: (artifacts) => {
-    	return {
-      		isValid: true,
-      		credentials: {
-      		id: artifacts.decoded.payload.id,
-      	},
-      }
-    },
+    validate: (artifacts) => ({
+      isValid: true,
+      credentials: {
+        id: artifacts.decoded.payload.id,
+      },
+    }),
   });
 
   // plugin internal
@@ -116,16 +113,16 @@ const init = async () => {
       plugin: _exports,
       options: {
         service: ProducerService,
-        validator: ExportValidator
-      }
+        validator: ExportValidator,
+      },
     },
     {
       plugin: upload,
       options: {
         service: uploadService,
-        validator: UploadValidator
-      } 
-    }
+        validator: UploadValidator,
+      },
+    },
   ]);
 
   await server.start();

@@ -5,4 +5,8 @@ node_modules
 node_modules
 package-lock.json
 api/upload/file
+<<<<<<< HEAD
 >>>>>>> 76f000c (loacl storage implemented)
+=======
+test.js
+>>>>>>> 7564c6f (update gitignore)

@@ -1,1 +1,8 @@
+<<<<<<< HEAD
 node_modules
+=======
+.env
+node_modules
+package-lock.json
+api/upload/file
+>>>>>>> 76f000c (loacl storage implemented)

@@ -2,6 +2,8 @@ require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const Inert = require('@hapi/inert');
+const path = require('path');
 
 // notes
 const notes = require('./src/api/notes');// plugin
@@ -29,11 +31,18 @@ const _exports = require('./src/api/exports'); // untuk menghindari konflik deng
 const ProducerService = require('./src/services/rabbitmq/producerService');
 const ExportValidator = require('./src/validator/exports');
 
+// uploads
+const upload = require('./src/api/upload');
+const UploadService = require('./src/services/Storage/StorageService');
+const UploadValidator = require('./src/validator/Upload');
+
+
 const init = async () => {
   const collaborationService = new CollaborationService();
   const notesService = new NoteService(collaborationService);
   const userService = new UserService();
   const authService = new AuthService();
+  const uploadService = new UploadService(path.resolve(__dirname,'api/uploads/file/images'));
   const server = Hapi.server({
     port: process.env.PORT,
     host: process.env.HOST,
@@ -48,6 +57,9 @@ const init = async () => {
     {
       plugin: Jwt,
     },
+    {
+      plugin: Inert,
+    }
   ]);
   server.auth.strategy('notesapp_jwt', 'jwt', {
     keys: process.env.ACCESS_TOKEN_KEY,
@@ -106,6 +118,13 @@ const init = async () => {
         service: ProducerService,
         validator: ExportValidator
       }
+    },
+    {
+      plugin: upload,
+      options: {
+        service: uploadService,
+        validator: UploadValidator
+      } 
     }
   ]);
 

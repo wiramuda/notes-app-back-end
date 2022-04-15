@@ -3,14 +3,14 @@
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 const AuthorizationError = require('../../exception/authorizations');
-const ClientError = require('../../exception/ClientError');
 const InvariantError = require('../../exception/InvariantError');
 const NotFoundError = require('../../exception/NotFoundError');
 const { mapDBToModel } = require('../../utils');
 
 class NotesService {
-  constructor(collaboratorService) {
+  constructor(collaboratorService, cacheService) {
     this._pool = new Pool();
+    this._cacheService = cacheService;
     this._collaboratorService = collaboratorService;
   }
 
@@ -31,9 +31,11 @@ class NotesService {
     if (!result.rows[0].id) {
       throw new InvariantError('catatan tidak berhasil ditambahkan');
     }
+    await this._cacheService.delete(`notes:${credentialId}`);
     return result.rows[0].id;
   }
-  //left join collaborations as c on c.note_id = notes.id
+
+  // left join collaborations as c on c.note_id = notes.id
   // or collaborations.user_id = $1 group by notes.id
   async getNotes(owner) {
     const query = {
@@ -71,6 +73,8 @@ class NotesService {
     if (!result.rows[0]) {
       throw new InvariantError('catatan gagal diperbaharui, catatan tidak ditemukan');
     }
+    const { owner } = result.rows[0];
+    await this._cacheService.del(`notes:${owner}`);
     return result.rows.map(mapDBToModel)[0];
   }
 
@@ -83,6 +87,8 @@ class NotesService {
     if (!result.rows[0]) {
       throw new NotFoundError('catatan tidak ditemukan');
     }
+    const { owner } = result.rows[0];
+    this._cacheService.del(`notes:${owner}`);
   }
 
   async verifyNoteOwner(id, owner) {

@@ -38,13 +38,21 @@ class NotesService {
   // left join collaborations as c on c.note_id = notes.id
   // or collaborations.user_id = $1 group by notes.id
   async getNotes(owner) {
-    const query = {
-      text: `select * from notes  
-      where owner = $1 `,
-      values: [owner],
-    };
-    const result = await this._pool.query(query);
-    return result.rows.map(mapDBToModel);
+    try {
+      const result = await this._cacheService.get(`notes:${owner}`);
+      return JSON.parse(result);
+    } catch (e) {
+      const query = {
+        text: `select notes.* from notes  
+        left join collaborations as c on c.note_id = notes.id
+        or collaborations.user_id = $1 group by notes.id group by notes.id`,
+        values: [owner],
+      };
+      const result = await this._pool.query(query);
+      const mappedResult = result.rows.map(mapDBToModel);
+      await this._cacheService.set(`notes:${owner}`, JSON.stringify(mappedResult));
+      return mappedResult;
+    }
   }
 
   async getNoteById(id) {
